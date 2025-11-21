@@ -1,7 +1,7 @@
 {
   "domain": "alexa",
   "name": "Amazon Alexa",
-  "version": "1.0.2-ha2025.11.2",
+  "version": "1.0.3-ha2025.11.2",
   "after_dependencies": ["camera"],
   "codeowners": ["@home-assistant/cloud", "@ochlocracy", "@jbouwh"],
   "dependencies": ["http"],
