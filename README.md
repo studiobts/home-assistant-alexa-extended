@@ -1,12 +1,10 @@
 # Amazon Alexa - Extended
 
---- 
+This is an extended version of the core Alexa integration. It adds a configurable `blocker` option: when the template evaluates to `true`, the integration will block execution of incoming Alexa commands that would change device state. 
 
-This is an extended version of the core Alexa integration. It adds a configurable `blocker` option: when the template evaluates to `true`, the integration will block execution of incoming Alexa commands that would change device state. Requests that update state (state report) and authorization requests are still allowed when the template evaluates to `true`.
+Requests that update state (state report) and authorization requests are still allowed when the template evaluates to `true`.
 
 ## Key behavior
-
----
 
 - `blocker` is evaluated using Home Assistant templating (Jinja2 style).
 - When the template evaluates to `true`:
@@ -16,16 +14,12 @@ This is an extended version of the core Alexa integration. It adds a configurabl
 
 ## When to use
 
----
-
 Use this feature when you need a global or conditional "safety switch" to prevent Alexa from making state changes — for example:
 - Night mode, maintenance windows, child-safe mode, not at home
 - External conditions (power saving, emergency mode)
 - Integration-level temporary lockouts
 
 ## Configuration
-
----
 
 The integration accepts a `blocker` parameter. The template can reference `states`, `state_attr`, `now()`, helpers, and other standard Home Assistant template features.
 
@@ -42,8 +36,6 @@ Notes:
 
 ## Behavior details
 
----
-
 - Allowed requests while blocked:
   - Alexa authorization (account linking / auth) requests
   - Alexa state update/report requests
@@ -52,8 +44,6 @@ Notes:
 - The integration will not execute the underlying service calls while blocked. It will respond according to the Alexa skill expectations but will not perform state-changing operations.
 
 ## Examples
-
----
 
 Block using an `input_boolean` (recommended for UI control):
 
@@ -68,14 +58,10 @@ Flip the `input_boolean` in the UI to toggle blocking.
 
 ## Testing
 
----
-
 - Use the Home Assistant developer tools to evaluate your template and confirm it returns the expected boolean value.
 - Test typical Alexa directives and confirm state-update and authorization requests still pass while change-directives are blocked.
 
 ## Troubleshooting
-
----
 
 - If the template never evaluates as expected, validate it in Developer Tools → Templates.
 - Ensure the template returns a boolean. Use `| bool` or explicit comparisons to avoid string truthiness issues.
@@ -83,14 +69,10 @@ Flip the `input_boolean` in the UI to toggle blocking.
 
 ## Limitations
 
----
-
 - This component adds conditional blocking at the integration level. It is not a replacement for fine-grained access control per entity.
 - Depending on Alexa skill expectations, blocked directives may return error responses or be silently ignored; test your Alexa setup to confirm desired behavior.
 
 ## Release and core compatibility
-
----
 
 Every released version of this extended integration is built against a specific version of the original core Alexa integration. When changes are introduced in the core integration, those changes will be integrated into this extension; a new extension release will be published to reflect the update.
 
