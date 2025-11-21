@@ -242,7 +242,10 @@ async def async_handle_message(
         if should_block_command(config.blocker, directive):
             _LOGGER.warning("Directive [%s/%s] HAS NOT BEEN EXECUTED since blocker condition evaluated as True",
                             directive.namespace, directive.name)
-            response = directive.error(error_message="Command Blocked")
+            response = directive.error(
+                error_type="INSUFFICIENT_PERMISSIONS",
+                error_message="Command Blocked"
+            )
         else:
             funct_ref = HANDLERS.get((directive.namespace, directive.name))
             if funct_ref:
