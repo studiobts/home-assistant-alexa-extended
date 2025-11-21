@@ -19,6 +19,7 @@ CONF_FILTER = "filter"
 CONF_ENTITY_CONFIG = "entity_config"
 CONF_ENDPOINT = "endpoint"
 CONF_LOCALE = "locale"
+CONF_BLOCKER = "blocker"
 
 ATTR_UID = "uid"
 ATTR_UPDATE_DATE = "updateDate"

@@ -27,6 +27,7 @@ from .const import (
     CONF_ENTITY_CONFIG,
     CONF_FILTER,
     CONF_LOCALE,
+    CONF_BLOCKER,
     EVENT_ALEXA_SMART_HOME,
 )
 from .diagnostics import async_redact_auth_data
@@ -77,6 +78,11 @@ class AlexaConfig(AbstractConfig):
     def locale(self) -> str | None:
         """Return config locale."""
         return self._config.get(CONF_LOCALE)
+
+    @property
+    def blocker(self) -> str | None:
+        """Return config blocker."""
+        return self._config.get(CONF_BLOCKER)
 
     @core.callback
     def user_identifier(self) -> str:
@@ -171,6 +177,35 @@ class SmartHomeView(HomeAssistantView):
 
         return b"" if response is None else self.json(response)
 
+def should_block_command(blocker, directive: AlexaDirective) -> bool:
+    """Check if the Alexa command should be blocked."""
+    _LOGGER.info("Check if directive [%s/%s] should be blocked ", directive.namespace, directive.name)
+    block = False
+
+    if not blocker:
+        _LOGGER.info("No blocker condition configured, skip check")
+        return False
+
+    # Skip check on some commands
+    if directive.namespace == "Alexa.Authorization" or (
+            directive.namespace == "Alexa" and directive.name == "ReportState"):
+        _LOGGER.info("Check skipped for directive [%s/%s]", directive.namespace, directive.name)
+        return False
+
+    try:
+        rendered = blocker.async_render()
+
+        if isinstance(rendered, bool):
+            block = rendered
+        elif isinstance(rendered, str):
+            block = rendered.strip().lower() == "true"
+    except Exception as e:
+        _LOGGER.error("Error evaluating blocker condition: %s", e)
+        return False
+
+    _LOGGER.info("Blocker condition evaluated [%s]", block)
+
+    return block
 
 async def async_handle_message(
     hass: HomeAssistant,
@@ -203,16 +238,22 @@ async def async_handle_message(
         if directive.has_endpoint:
             directive.load_entity(hass, config)
 
-        funct_ref = HANDLERS.get((directive.namespace, directive.name))
-        if funct_ref:
-            response = await funct_ref(hass, config, directive, context)
-            if directive.has_endpoint:
-                response.merge_context_properties(directive.endpoint)
+        # Before proceed check if command should be blocked
+        if should_block_command(config.blocker, directive):
+            _LOGGER.warning("Directive [%s/%s] HAS NOT BEEN EXECUTED since blocker condition evaluated as True",
+                            directive.namespace, directive.name)
+            response = directive.error(error_message="Command Blocked")
         else:
-            _LOGGER.warning(
-                "Unsupported API request %s/%s", directive.namespace, directive.name
-            )
-            response = directive.error()
+            funct_ref = HANDLERS.get((directive.namespace, directive.name))
+            if funct_ref:
+                response = await funct_ref(hass, config, directive, context)
+                if directive.has_endpoint:
+                    response.merge_context_properties(directive.endpoint)
+            else:
+                _LOGGER.warning(
+                    "Unsupported API request %s/%s", directive.namespace, directive.name
+                )
+                response = directive.error()
     except AlexaError as err:
         response = directive.error(
             error_type=str(err.error_type),
