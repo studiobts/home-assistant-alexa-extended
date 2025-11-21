@@ -19,6 +19,24 @@ Use this feature when you need a global or conditional "safety switch" to preven
 - External conditions (power saving, emergency mode)
 - Integration-level temporary lockouts
 
+## Installation
+
+1. Add the repository to HACS
+
+- In Home Assistant open HACS.
+- Click the overflow menu (three dots) in the top right and choose Custom repositories.
+- Add a new repository with: 
+  - Repository: studiobts/home-assistant-alexa-extended
+  - Category: Integration
+- Go to HACS and search for Amazon Alexa - Extended. Click Install to install the integration.
+- After installation, restart Home Assistant
+
+2. Manual installation
+
+- Download or clone this repository.
+- Copy the `alexa` folder into your Home Assistant `custom_components` directory.
+- Restart Home Assistant.
+
 ## Configuration
 
 The integration accepts a `blocker` parameter. The template can reference `states`, `state_attr`, `now()`, helpers, and other standard Home Assistant template features.
