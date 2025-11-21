@@ -1,0 +1,12 @@
+{
+  "name": "Amazon Alexa - Extended",
+  "domain": "alexa",
+  "homeassistant": "2025.11.2",
+  "version": "1.0.0",
+  "hacs": {
+    "type": "integration"
+  },
+  "description": "Custom Alexa component based on the official Home Assistant Core component, with added features.",
+  "documentation": "https://github.com/studiobts/home-assistant-alexa-extended",
+  "authors": ["@studiobts"]
+}
