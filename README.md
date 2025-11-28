@@ -1,5 +1,13 @@
 # Amazon Alexa - Extended
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+
+If you want to make donation as appreciation of my work, you can do so via buy me a coffee. Thank you!
+
+<a href="https://buymeacoffee.com/studiobts" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png"></a>
+
+## Introduction
+
 This is an extended version of the core Alexa integration. It adds a configurable `blocker` option: when the template evaluates to `true`, the integration will block execution of incoming Alexa commands that would change device state. 
 
 Requests that update state (state report) and authorization requests are still allowed when the template evaluates to `true`.
