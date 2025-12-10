@@ -1,7 +1,7 @@
 {
   "domain": "alexa",
   "name": "Amazon Alexa - Extended",
-  "version": "1.0.4-ha2025.11.2",
+  "version": "1.0.4-ha2025.12.2",
   "after_dependencies": ["camera"],
   "codeowners": ["@studiobts"],
   "dependencies": ["http"],
