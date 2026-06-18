@@ -108,3 +108,64 @@ Versioning semantics:
 - The suffix format is `-ha<core-version>` to make compatibility explicit
 
 Check release notes or the tag for each release to see the exact referenced core version and any integration changes.
+
+## Updating to a new Home Assistant core version
+
+This repository keeps the upstream code and the custom modifications on separate
+branches, which makes updates predictable:
+
+- `original` — a verbatim copy of the core `alexa` component, with no custom changes.
+- `main` — the `original` code plus the `blocker` feature.
+
+The modifications introduced by this extension are intentionally small and isolated
+so syncing with a new core release is usually conflict-free.
+
+### 1. Update the `original` branch with the new core code
+
+Use the helper script `sync-original.sh` passing the target core version as argument:
+
+```bash
+./sync-original.sh 2026.6.3
+```
+
+The script checks out `original`, downloads only the `alexa` component from the given
+core tag (a sparse, blobless clone — it does not download the whole core repository),
+replaces `custom_components/alexa` with the pristine code, commits with the message
+`Updated code to <version>`, and returns to the branch you started from.
+
+Then publish the branch:
+
+```bash
+git push origin original
+```
+
+### 2. Merge `original` into `main`
+
+Bring the updated core code into `main`, preserving the `blocker` feature:
+
+```bash
+git checkout main
+git pull --ff-only
+git merge original
+```
+
+Because the custom changes do not overlap with the upstream changes, the merge
+normally completes automatically. If a conflict ever appears, it will be limited to
+the files changed; resolve it by keeping both the upstream change and the `blocker` logic.
+
+### 3. Update metadata and tag the release
+
+Before publishing, update the version metadata to match the new core version:
+
+- `manifest.json` — bump the `version` field.
+- `hacs.json` — bump `version` and, if needed, the minimum `homeassistant` version.
+
+Then commit, push, and create a release tag following the
+`v<ext-version>-ha<core-version>` convention described in
+[Release and core compatibility](#release-and-core-compatibility):
+
+```bash
+git push origin main
+git tag v1.0.5-ha2026.6.3
+git push origin v1.0.5-ha2026.6.3
+```
